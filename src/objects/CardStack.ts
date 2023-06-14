@@ -1,5 +1,6 @@
 import { CardEvent, CardObject } from 'src/objects/CardObject'
 import { IDestroyOptions, Point } from 'pixi.js'
+import { Asset } from 'src/modules/AssetsModule'
 
 export enum StackPosition {
   TOP,
@@ -14,9 +15,41 @@ export enum StackDirection {
 type Position = StackPosition.TOP | StackPosition.BOTTOM | number
 
 export class CardStack extends CardObject {
+  stackType: any
+  stackSuit: any
+
   stack: CardStack[] = []
   isInStack = false
-  parentStack: CardStack | null = null
+  _parentStack: CardStack | null = null
+  lastParentStack: CardStack | null = null
+
+  canBeStackedOn = true
+  mustReturnToPreviousStack = false
+
+  stackingOffset = new Point(0, 20)
+  initialStackingOffset = new Point(0, 20)
+
+  hideCardsInStack = false
+  hideOnlyUntouchedCards = true
+  canPullFromTopOnly = false
+
+  maxAllowedInStack = Infinity
+
+  canStackOnlySameType = false
+  canStackOnlySameSuit = false
+  canStackOnlyInSequence = false
+  canOnlyStackOppositeSuitColor = false
+
+  hasBeenTouched = false
+
+  get parentStack() {
+    return this._parentStack
+  }
+
+  set parentStack(stack: CardStack | null) {
+    this.lastParentStack = this._parentStack
+    this._parentStack = stack
+  }
 
   onStart(flip = true) {
     super.onStart(flip)
@@ -29,13 +62,62 @@ export class CardStack extends CardObject {
     super.onUpdate(dt)
 
     this.alignStack()
+    this.handleCardVisibilityAndUsage()
 
     if (this.isImmovable) return
 
     this.checkBoundsAndMove()
   }
 
-  add(card: CardStack, at: StackPosition) {
+  handleCardVisibilityAndUsage() {
+    for (const card of this.stack) {
+      if (this.top === card) {
+        if (card.isDraggable) continue
+        card.isDraggable = true
+        if (!card.mesh) continue
+        card.setVisible(true)
+        continue
+      }
+
+      if (this.hideCardsInStack) {
+        if (!card.mesh) continue
+        if (this.hideOnlyUntouchedCards && card.hasBeenTouched) continue
+        card.setVisible(false)
+      }
+
+      if (this.canPullFromTopOnly) {
+        card.isDraggable = false
+      }
+    }
+  }
+
+  get carry() {
+    return this.stack[0]
+  }
+
+  get top() {
+    return this.stack[this.stack.length - 1]
+  }
+
+  add(card: CardStack, at: StackPosition, automaticStacker = false) {
+    if (
+      !automaticStacker &&
+      this.canStackOnlySameType &&
+      card.stackType !== this.stackType
+    ) {
+      return
+    }
+    if (
+      this.top &&
+      !automaticStacker &&
+      this.canStackOnlySameSuit &&
+      card.stackSuit !== this.top.stackSuit
+    ) {
+      return
+    }
+    if (this.stack.length >= this.maxAllowedInStack) return
+    if (!this.canBeStackedOn) return
+    this.stackSuit = card.stackSuit
     if (at === StackPosition.TOP) {
       this.stack.push(card)
     } else if (at === StackPosition.BOTTOM) {
@@ -75,8 +157,8 @@ export class CardStack extends CardObject {
       const previous = index === 0 ? this : this.stack[index - 1]
       const pos = Point.from(previous.position.clone())
       const offset =
-        this.name === 'PlacementTileObject' ? (index === 0 ? 0 : 20) : 20
-      stack.moveTo(pos.x, pos.y + offset)
+        index === 0 ? this.initialStackingOffset : this.stackingOffset
+      stack.moveTo(pos.x + offset.x, pos.y + offset.y)
     })
   }
 
@@ -193,17 +275,17 @@ export class CardStack extends CardObject {
     }
   }
 
-  migrateToStack(stack: CardStack, at: Position) {
-    stack.combineWithStack(this, at)
+  migrateToStack(stack: CardStack, at: Position, automaticStacker = false) {
+    stack.combineWithStack(this, at, automaticStacker)
   }
 
-  combineWithStack(stack: CardStack, at: Position) {
+  combineWithStack(stack: CardStack, at: Position, automaticStacker = false) {
     switch (at) {
       case StackPosition.TOP:
-        this.add(stack, StackPosition.TOP)
+        this.add(stack, StackPosition.TOP, automaticStacker)
         return
       case StackPosition.BOTTOM:
-        this.add(stack, StackPosition.BOTTOM)
+        this.add(stack, StackPosition.BOTTOM, automaticStacker)
         return
       default:
         if (at < 0 || at > this.stack.length) {
@@ -229,6 +311,7 @@ export class CardStack extends CardObject {
       if (stack.isDragging) return false
       if (this.isParentDragging) return false
       if (stack.isParentDragging) return false
+      if (this.isFlipping) return false
       return true
     }
 
@@ -242,6 +325,15 @@ export class CardStack extends CardObject {
         )
       }
     }
+
+    if (
+      !this.isInStack &&
+      this.mustReturnToPreviousStack &&
+      !this.isFlipping &&
+      this.lastParentStack
+    ) {
+      this.migrateToStack(this.lastParentStack, StackPosition.TOP, true)
+    }
   }
 
   removeFromParentStack() {
@@ -250,6 +342,8 @@ export class CardStack extends CardObject {
   }
 
   handlePickupAndUnstack() {
+    this.hasBeenTouched = true
+
     this.stack.forEach((item) => {
       item.isParentDragging = true
       item.zIndex = 100

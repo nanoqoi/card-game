@@ -8,6 +8,7 @@ import {
 } from 'pixi.js'
 import { Asset, Sound } from 'src/modules/AssetsModule'
 import { CardStack } from 'src/objects/CardStack'
+import type { CustomScene } from 'src/scenes/CustomScene'
 
 const SHADOW_OFFSET = 8
 
@@ -18,6 +19,8 @@ export enum CardEvent {
 }
 
 export class CardObject extends GameObject<CardEvent> {
+  stackType: any
+
   mesh!: AnimatedSprite
   shadow!: AnimatedSprite
   item!: AnimatedSprite
@@ -26,14 +29,21 @@ export class CardObject extends GameObject<CardEvent> {
   isDraggable = true
   isImmovable = false
 
+  canPop = false
+
+  isNotVisibleYet = false
+
   public isDragging = false
   public isParentDragging = false
   public isFlipping = true
+  public isVisible = true
 
   private dragData: FederatedMouseEvent | null = null
   private dragStartPoint: IPointData | null = null
 
   async pop() {
+    if (!this.canPop) return
+    this.eventMode = 'none'
     this.mesh.stop()
     this.item?.destroy()
     this.faces.forEach((face) => face.destroy())
@@ -67,6 +77,19 @@ export class CardObject extends GameObject<CardEvent> {
 
   onStart(flip = true) {
     this.name = 'CardObject'
+
+    this.once('added', () =>
+      this.environment.assets.sound.play(
+        [
+          Sound.CARD_PICKUP_1,
+          Sound.CARD_PICKUP_2,
+          Sound.CARD_PICKUP_3,
+          Sound.CARD_PICKUP_4,
+          Sound.CARD_PICKUP_5,
+        ][Math.floor(Math.random() * 5)],
+        { volume: 0.3 },
+      ),
+    )
 
     this.mesh = new AnimatedSprite(
       [
@@ -124,17 +147,6 @@ export class CardObject extends GameObject<CardEvent> {
       this.mesh.loop = false
       this.mesh.animationSpeed = 0.4
 
-      this.environment.assets.sound.play(
-        [
-          Sound.CARD_PICKUP_1,
-          Sound.CARD_PICKUP_2,
-          Sound.CARD_PICKUP_3,
-          Sound.CARD_PICKUP_4,
-          Sound.CARD_PICKUP_5,
-        ][Math.floor(Math.random() * 5)],
-        { volume: 0.3 },
-      )
-
       this.mesh.onFrameChange = (currentFrame: number) => {
         if (currentFrame === this.mesh.textures.length - 1) {
           if (this.item) {
@@ -158,6 +170,30 @@ export class CardObject extends GameObject<CardEvent> {
     }
 
     this.mesh.play()
+  }
+
+  public setVisible(visible: boolean) {
+    if (visible) {
+      this.isVisible = true
+      if (!this.mesh) return
+      this.mesh.textures = [
+        this.environment.assets.getTexture(Asset.CARD1),
+        this.environment.assets.getTexture(Asset.CARD2),
+        this.environment.assets.getTexture(Asset.CARD3),
+      ].sort(() => Math.random() - 0.5)
+      this.mesh.animationSpeed = 0.1
+      this.mesh.play()
+      this.item.alpha = 1
+      this.faces.map((face) => (face.alpha = 1))
+    } else {
+      this.isVisible = false
+      if (!this.mesh) return
+      this.mesh.textures = [
+        this.environment.assets.getTexture(Asset.CARD_FLIP1),
+      ]
+      this.item.alpha = 0
+      this.faces.map((face) => (face.alpha = 0))
+    }
   }
 
   public onPickUp(isDefault = true) {

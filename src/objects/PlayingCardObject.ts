@@ -1,5 +1,5 @@
 import { Asset } from 'src/modules/AssetsModule'
-import { CardWithFaceObject } from 'src/objects/CardWithFaceObject'
+import { CardType, CardWithFaceObject } from 'src/objects/CardWithFaceObject'
 
 const PlayingCards: Record<
   'hearts' | 'spades' | 'clubs' | 'diamonds',
@@ -12,7 +12,7 @@ const PlayingCards: Record<
 }
 
 export const spades = {
-  name: 'spades' as const,
+  name: 'spades' as CardType,
   faces: [
     // dark
     Asset.CARD_SPADES1,
@@ -22,7 +22,7 @@ export const spades = {
 }
 
 export const clubs = {
-  name: 'clubs' as const,
+  name: 'clubs' as CardType,
   faces: [
     // dark
     Asset.CARD_CLUBS1,
@@ -34,7 +34,7 @@ export const clubs = {
 export const darkSuits = [spades, clubs]
 
 export const hearts = {
-  name: 'hearts' as const,
+  name: 'hearts' as CardType,
   faces: [
     // light
     Asset.CARD_DIAMONDS1,
@@ -44,7 +44,7 @@ export const hearts = {
 }
 
 export const diamonds = {
-  name: 'diamonds' as const,
+  name: 'diamonds' as CardType,
   faces: [
     // light
     Asset.CARD_HEARTS1,
@@ -104,7 +104,7 @@ for (const { suits, faces } of cards) {
   for (const suit of suits) {
     for (const animatedFaces of faces) {
       PlayingCards[suit.name].push(
-        CardWithFaceObject([animatedFaces, suit.faces]),
+        CardWithFaceObject([animatedFaces, suit.faces], suit.name),
       )
     }
   }

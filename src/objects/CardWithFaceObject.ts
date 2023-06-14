@@ -2,13 +2,26 @@ import type { Asset } from 'src/modules/AssetsModule'
 import { CardStack } from 'src/objects/CardStack'
 import { AnimatedSprite } from 'pixi.js'
 
-export const CardWithFaceObject = (faces: Array<Asset[]>) =>
+export enum CardType {
+  HEARTS = 'hearts',
+  SPADES = 'spades',
+  DIAMONDS = 'diamonds',
+  CLUBS = 'clubs',
+}
+
+export const CardWithFaceObject = (
+  faces: Array<Asset[]>,
+  stackType: CardType,
+) =>
   class extends CardStack {
     item!: AnimatedSprite
 
+    stackType = stackType
+    stackSuit = stackType
+
     faces: AnimatedSprite[] = []
 
-    onStart() {
+    onStart(flip = true) {
       const [first, ...rest] = faces
 
       this.item = new AnimatedSprite(
@@ -39,7 +52,7 @@ export const CardWithFaceObject = (faces: Array<Asset[]>) =>
         face.play()
       }
 
-      super.onStart()
+      super.onStart(flip)
 
       this.mesh.addChild(this.item)
       for (const face of this.faces) {

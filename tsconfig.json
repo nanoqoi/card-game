@@ -6,7 +6,7 @@
     "target": "es6",
     "moduleResolution": "node",
     "lib": [
-      "es2018",
+      "es2019",
       "dom",
       "dom.iterable"
     ],
