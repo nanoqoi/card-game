@@ -1,5 +1,5 @@
 import { ScenesModule } from 'src/modules/ScenesModule'
-import { Application, SCALE_MODES, settings } from 'pixi.js'
+import { Application, SCALE_MODES, settings, Text } from 'pixi.js'
 import { AssetsModule } from 'src/modules/AssetsModule'
 import { PIXEL_SCALE } from 'src/constants'
 
@@ -59,6 +59,15 @@ export class Environment {
     // Setup for pixel art
     settings.SCALE_MODE = SCALE_MODES.NEAREST
     settings.ROUND_PIXELS = true
+
+    // loader // TODO TEMPORARY
+    const text = new Text('Loading...', { fill: 'white' })
+    text.anchor.set(0.5)
+    text.position.set(
+      this.engine.renderer.width / 2,
+      this.engine.renderer.height / 2,
+    )
+    this.engine.stage.addChild(text)
 
     // @ts-ignore
     document.body.appendChild(this.engine.view)
