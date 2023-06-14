@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "module": "CommonJS",
+    "target": "es6",
+    "moduleResolution": "node",
+    "lib": [
+      "es2018",
+      "dom",
+      "dom.iterable"
+    ],
+    "typeRoots": ["./node_modules/@types", "./@types"],
+    "esModuleInterop": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowUmdGlobalAccess": true,
+    "sourceMap": true,
+    "importsNotUsedAsValues": "error",
+    "moduleDetection": "auto",
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "@types/**/*",
+    "meta.json",
+    "package.json"
+  ],
+  "exclude": ["node_modules"]
+}
