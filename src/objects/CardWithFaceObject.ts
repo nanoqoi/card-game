@@ -9,8 +9,6 @@ export const CardWithFaceObject = (faces: Array<Asset[]>) =>
     faces: AnimatedSprite[] = []
 
     onStart() {
-      super.onStart()
-
       const [first, ...rest] = faces
 
       this.item = new AnimatedSprite(
@@ -40,6 +38,8 @@ export const CardWithFaceObject = (faces: Array<Asset[]>) =>
         face.animationSpeed = 0.1
         face.play()
       }
+
+      super.onStart()
 
       this.mesh.addChild(this.item)
       for (const face of this.faces) {

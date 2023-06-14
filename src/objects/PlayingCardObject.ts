@@ -11,47 +11,49 @@ const PlayingCards: Record<
   diamonds: [],
 }
 
-const darkSuits = [
-  {
-    name: 'spades' as const,
-    faces: [
-      // dark
-      Asset.CARD_SPADES1,
-      Asset.CARD_SPADES2,
-      Asset.CARD_SPADES3,
-    ],
-  },
-  {
-    name: 'clubs' as const,
-    faces: [
-      // dark
-      Asset.CARD_CLUBS1,
-      Asset.CARD_CLUBS2,
-      Asset.CARD_CLUBS3,
-    ],
-  },
-]
+export const spades = {
+  name: 'spades' as const,
+  faces: [
+    // dark
+    Asset.CARD_SPADES1,
+    Asset.CARD_SPADES2,
+    Asset.CARD_SPADES3,
+  ],
+}
 
-const lightSuits = [
-  {
-    name: 'hearts' as const,
-    faces: [
-      // light
-      Asset.CARD_DIAMONDS1,
-      Asset.CARD_DIAMONDS2,
-      Asset.CARD_DIAMONDS3,
-    ],
-  },
-  {
-    name: 'diamonds' as const,
-    faces: [
-      // light
-      Asset.CARD_HEARTS1,
-      Asset.CARD_HEARTS2,
-      Asset.CARD_HEARTS3,
-    ],
-  },
-]
+export const clubs = {
+  name: 'clubs' as const,
+  faces: [
+    // dark
+    Asset.CARD_CLUBS1,
+    Asset.CARD_CLUBS2,
+    Asset.CARD_CLUBS3,
+  ],
+}
+
+export const darkSuits = [spades, clubs]
+
+export const hearts = {
+  name: 'hearts' as const,
+  faces: [
+    // light
+    Asset.CARD_DIAMONDS1,
+    Asset.CARD_DIAMONDS2,
+    Asset.CARD_DIAMONDS3,
+  ],
+}
+
+export const diamonds = {
+  name: 'diamonds' as const,
+  faces: [
+    // light
+    Asset.CARD_HEARTS1,
+    Asset.CARD_HEARTS2,
+    Asset.CARD_HEARTS3,
+  ],
+}
+
+export const lightSuits = [hearts, diamonds]
 
 const lightFaces = [
   // light
