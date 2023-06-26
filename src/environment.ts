@@ -1,82 +1,30 @@
-import { ScenesModule } from 'src/modules/ScenesModule'
-import { Application, SCALE_MODES, settings, Text } from 'pixi.js'
-import { AssetsModule } from 'src/modules/AssetsModule'
-import { PIXEL_SCALE } from 'src/constants'
+import { AssetRegister } from 'src/registers/asset.register'
+import { EngineModule } from 'src/modules/engine.module'
+import { TickerModule } from 'src/modules/ticker.module'
+import { BoardRegister } from 'src/registers/board.register'
 
 export class Environment {
-  private _isInitialized = false
-
-  public engine!: Application
-
+  // registers
+  public readonly assets = new AssetRegister(this)
+  public readonly boards = new BoardRegister(this)
   // modules
-  public scenes!: ScenesModule
-  public assets!: AssetsModule
+  public readonly engine = new EngineModule(this)
+  public readonly ticker = new TickerModule(this)
 
   public async initialize() {
-    out.log('Initializing environment...')
-
-    // Initialize Engine
-    await this.initEngine()
-
-    // Modules
-    this.assets = new AssetsModule(this)
+    // registers
     await this.assets.initialize()
-    this.scenes = new ScenesModule(this)
-    await this.scenes.initialize()
-
-    // Resizer
-    window.addEventListener('resize', () => this.onResize())
-    this.onResize()
-
-    this._isInitialized = true
-    out.log('Environment initialized.')
+    await this.boards.initialize()
+    // modules
+    await this.engine.initialize()
+    await this.ticker.initialize()
   }
 
   public async start() {
-    out.log('Starting environment...')
-    if (!this._isInitialized) {
-      throw new Error(
-        'Environment is not initialized, call <Environment>.initialize() first.',
-      )
-    }
-
-    this.engine.ticker.start()
-
-    // await this.scenes.setActive(ScenesModule.Scenes.LOADING)
-    await this.scenes.setActive(ScenesModule.Scenes.MAIN_MENU)
-
-    out.log('Environment started.')
+    this.ticker.raw.addOnce(this.onFirstTick)
+    this.ticker.add(this.onTick)
   }
 
-  private async initEngine() {
-    this.engine = new Application({
-      antialias: false,
-      hello: false,
-      backgroundColor: 0x383147,
-      resolution: 1,
-    })
-
-    // Setup for pixel art
-    settings.SCALE_MODE = SCALE_MODES.NEAREST
-    settings.ROUND_PIXELS = true
-
-    // loader // TODO TEMPORARY
-    const text = new Text('Loading...', { fill: 'white' })
-    text.anchor.set(0.5)
-    text.position.set(
-      this.engine.renderer.width / 2,
-      this.engine.renderer.height / 2,
-    )
-    this.engine.stage.addChild(text)
-
-    // @ts-ignore
-    document.body.appendChild(this.engine.view)
-  }
-
-  private onResize() {
-    this.engine.renderer.resize(
-      window.innerWidth / PIXEL_SCALE,
-      window.innerHeight / PIXEL_SCALE,
-    )
-  }
+  private onFirstTick = () => {}
+  private onTick = () => {}
 }

@@ -16,6 +16,7 @@
     "resolveJsonModule": true,
     "allowUmdGlobalAccess": true,
     "sourceMap": true,
+    "experimentalDecorators": true,
     "importsNotUsedAsValues": "error",
     "moduleDetection": "auto",
     "baseUrl": ".",
