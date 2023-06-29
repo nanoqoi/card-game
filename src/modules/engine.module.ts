@@ -1,5 +1,5 @@
 import { Module } from 'src/modules/module'
-import { Application, BaseTexture, SCALE_MODES, settings } from 'pixi.js'
+import { Application, BaseTexture, Point, SCALE_MODES, settings } from 'pixi.js'
 import { PIXEL_SCALE } from 'src/constants'
 import type { Environment } from 'src/environment'
 
@@ -7,8 +7,8 @@ export class EngineModule extends Module {
   private _engine = new Application({
     antialias: false,
     hello: false,
-    backgroundColor: 0x383147,
-    resolution: 1,
+    backgroundColor: 0x0d2b45,
+    resolution: PIXEL_SCALE,
   })
 
   constructor(environment: Environment) {
@@ -19,9 +19,6 @@ export class EngineModule extends Module {
   }
 
   public async initialize() {
-    // @ts-ignore
-    document.body.appendChild(this._engine.view)
-
     await this.load()
   }
 
@@ -30,7 +27,8 @@ export class EngineModule extends Module {
       throw new Error('Engine not initialized.')
     }
 
-    addEventListener('resize', this.onAppResize)
+    addEventListener('resize', this.onAppResize.bind(this))
+    this.onAppResize()
 
     this._engine.start()
   }
@@ -40,7 +38,7 @@ export class EngineModule extends Module {
       return
     }
 
-    removeEventListener('resize', this.onAppResize)
+    removeEventListener('resize', this.onAppResize.bind(this))
 
     this._engine.stop()
   }
@@ -50,6 +48,18 @@ export class EngineModule extends Module {
       throw new Error('Engine not initialized.')
     }
     return this._engine
+  }
+
+  public get center() {
+    return new Point(this.width / 2, this.height / 2)
+  }
+
+  public get width() {
+    return this._engine.screen.width
+  }
+
+  public get height() {
+    return this._engine.screen.height
   }
 
   public get stage() {
@@ -70,5 +80,12 @@ export class EngineModule extends Module {
 
   private onAppResize = () => {
     this.resize(innerWidth / PIXEL_SCALE, innerHeight / PIXEL_SCALE)
+  }
+
+  public get resizer() {
+    return {
+      add: (listener: () => void) => addEventListener('resize', listener),
+      remove: (listener: () => void) => removeEventListener('resize', listener),
+    }
   }
 }

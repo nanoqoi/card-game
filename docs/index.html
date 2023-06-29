@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Card Game</title>
+
+    <link rel="stylesheet" href="./reset.css">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: black;
+            image-rendering: pixelated;
+        }
+        canvas {
+            margin: auto;
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1;
+        }
+        body {
+            cursor: url(textures/pointer1.png), auto;
+            animation: animated_cursor 500ms infinite;
+        }
+
+        body:active {
+            cursor: url(textures/pointer-active1.png), auto;
+            animation: animated_cursor_active 500ms infinite;
+        }
+
+        @keyframes animated_cursor {
+            0% {
+                cursor: url(textures/pointer1.png), auto;
+            }
+            33.33% {
+                cursor: url(textures/pointer2.png), auto;
+            }
+            66.66% {
+                cursor: url(textures/pointer3.png), auto;
+            }
+        }
+
+        @keyframes animated_cursor_active {
+            0% {
+                cursor: url(textures/pointer-active1.png), auto;
+            }
+            33.33% {
+                cursor: url(textures/pointer-active2.png), auto;
+            }
+            66.66% {
+                cursor: url(textures/pointer-active3.png), auto;
+            }
+        }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="./assets/index-be51b7b3.js"></script>
+</head>
+<body>
+
+</body>
+</html>

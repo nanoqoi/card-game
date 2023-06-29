@@ -21,6 +21,10 @@ export class TickerModule extends Module {
     this._ticker.add(fn)
   }
 
+  public addOnce(fn: (delta: number) => void) {
+    this._ticker.addOnce(fn)
+  }
+
   public remove(fn: (delta: number) => void) {
     this._ticker.remove(fn)
   }
