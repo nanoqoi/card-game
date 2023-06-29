@@ -8,6 +8,13 @@ export const textStyles = {
       fontFamily: 'pixelFJ8pt1',
     })
   },
+  large(color: number) {
+    return new TextStyle({
+      fill: color,
+      fontSize: 16,
+      fontFamily: 'pixelFJ8pt1',
+    })
+  },
   medium(color: number) {
     return new TextStyle({
       fill: color,
