@@ -33,7 +33,7 @@ export class LoadingBoard extends Board {
 
     const loading = new Text('Loading 0%...', textStyles.medium(0xffecd6))
 
-    const currentAsset = new Text('', textStyles.small(0x544e68))
+    const currentAsset = new Text('', textStyles.extraSmall(0x544e68))
 
     loading.anchor.set(0.5)
     loading.position.set(0, 20)
@@ -71,8 +71,9 @@ export class LoadingBoard extends Board {
     }
 
     if (this.currentAsset) {
-      this.currentAsset.text =
-        this.environment.assets.currentlyLoadingAsset?.name ?? ''
+      this.currentAsset.text = this.environment.assets.currentlyLoadingAssets
+        .map((asset) => asset.name)
+        .join(', ')
     }
 
     if (this.environment.assets.loadingComplete) {

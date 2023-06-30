@@ -22,4 +22,11 @@ export const textStyles = {
       fontFamily: 'pixelFJ8pt1',
     })
   },
+  extraSmall(color: number) {
+    return new TextStyle({
+      fill: color,
+      fontSize: 4,
+      fontFamily: 'pixelFJ8pt1',
+    })
+  },
 }

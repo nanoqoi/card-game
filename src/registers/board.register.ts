@@ -13,6 +13,8 @@ export abstract class Board extends Registerable<BoardRegister> {
   ) {
     super()
     this.container.visible = false
+    this.container.interactive = true
+    this.container.sortableChildren = true
   }
 
   public get position() {
@@ -32,7 +34,7 @@ export abstract class Board extends Registerable<BoardRegister> {
   }
 
   public get x() {
-    return this.container.y
+    return this.container.x
   }
 
   public set y(value: number) {

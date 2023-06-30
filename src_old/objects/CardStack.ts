@@ -1,4 +1,4 @@
-import { CardEvent, CardObject } from 'src/objects/CardObject'
+import { CardEvent, CardObject } from 'src_old/objects/CardObject'
 import { IDestroyOptions, Point } from 'pixi.js'
 import { Asset } from 'src/modules/AssetsModule'
 

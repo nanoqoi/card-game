@@ -3,6 +3,7 @@ import { EngineModule } from 'src/modules/engine.module'
 import { TickerModule } from 'src/modules/ticker.module'
 import { BoardRegister } from 'src/registers/board.register'
 import { sound } from '@pixi/sound'
+import { InteractionModule } from 'src/modules/interaction.module'
 
 export class Environment {
   public isPaused = false
@@ -10,9 +11,11 @@ export class Environment {
   // registers
   public readonly assets = new AssetRegister(this)
   public readonly boards = new BoardRegister(this)
+
   // modules
   public readonly engine = new EngineModule(this)
   public readonly ticker = new TickerModule(this)
+  public readonly interaction = new InteractionModule(this)
 
   public async initialize() {
     // registers

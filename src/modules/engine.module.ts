@@ -14,8 +14,9 @@ export class EngineModule extends Module {
   constructor(environment: Environment) {
     BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
     settings.ROUND_PIXELS = true
-
     super(environment)
+    this._engine.stage.interactive = true
+    this._engine.stage.sortableChildren = true
   }
 
   public async initialize() {

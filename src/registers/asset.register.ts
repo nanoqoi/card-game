@@ -4,6 +4,7 @@ import { Sound } from '@pixi/sound'
 
 export class Asset extends Registerable<AssetRegister> {
   public isLoaded = false
+  public isLoading = false
 
   public constructor(
     public readonly name: string,
@@ -13,8 +14,10 @@ export class Asset extends Registerable<AssetRegister> {
   }
 
   public load() {
+    this.isLoading = true
     return Assets.load(this.path).then((asset) => {
       this.isLoaded = true
+      this.isLoading = false
       return asset
     })
   }
@@ -48,12 +51,14 @@ export class Asset extends Registerable<AssetRegister> {
 }
 
 export class AssetRegister extends Register<Asset> {
+  static BATCH_LOAD_SIZE = 5
+
   public async initialize() {
     await this.loadAll()
   }
 
   public get(name: string) {
-    return this.modules.find((a) => a.name === name)
+    return this.modules.find((a) => a.name === name)!
   }
 
   public getMany(names: string[]) {
@@ -80,8 +85,8 @@ export class AssetRegister extends Register<Asset> {
     return Math.floor(this.progress * 100)
   }
 
-  public get currentlyLoadingAsset() {
-    return this.modules[this.loaded]
+  public get currentlyLoadingAssets() {
+    return this.modules.filter((a) => a.isLoading)
   }
 
   public getPath(name: string) {
@@ -102,8 +107,13 @@ export class AssetRegister extends Register<Asset> {
   }
 
   public async loadAll() {
-    for (const asset of this.modules) {
-      await asset.load()
+    for (
+      let i = 0;
+      i < this.modules.length;
+      i += AssetRegister.BATCH_LOAD_SIZE
+    ) {
+      const batch = this.modules.slice(i, i + AssetRegister.BATCH_LOAD_SIZE)
+      await Promise.all(batch.map((a) => a.load()))
     }
   }
 }
