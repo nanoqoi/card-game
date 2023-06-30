@@ -51,7 +51,7 @@ export class Asset extends Registerable<AssetRegister> {
 }
 
 export class AssetRegister extends Register<Asset> {
-  static BATCH_LOAD_SIZE = 5
+  static BATCH_LOAD_SIZE = 10
 
   public async initialize() {
     await this.loadAll()
